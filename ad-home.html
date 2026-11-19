@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>広告 | スタックポーカー</title>
+<!-- ホーム画面の上の広告の場所に置く iframe の中身(2026-11-11)。
+     アプリ(index.html)とは別の文書。ビルドのとき VITE_MONETAG_HOME=on のときだけ、Monetag のタグが head の終わりに入る。
+     iframe は sandbox(スクリプトと、押したときの新しいタブだけ許す。アプリの画面の移動・アプリの文書への手出しはできない)。
+     ホームを離れると iframe ごと消えるので、広告はリング・トーナメントへ残らない。 -->
+<style>
+  html, body { margin: 0; height: 100%; background: #0F1730; overflow: hidden; }
+  .ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(165,174,200,.55); font: 11px/1 system-ui, sans-serif; letter-spacing: .1em; pointer-events: none; }
+</style>
+<script>(function(s){s.dataset.zone='12231410',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+</head>
+<body>
+<div class="ph" aria-hidden="true">広告</div>
+</body>
+</html>
