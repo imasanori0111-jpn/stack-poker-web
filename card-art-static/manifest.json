@@ -2,9 +2,9 @@
   "schema": "stack-poker-static-card-art/1",
   "images": {
     "c021-n": {
-      "file": "card-art-static/c021-n-4c3849f1bec84dea137a33d2d59d222168bccaba22aef4d5bb022f2a33868398.webp",
-      "sha256": "4c3849f1bec84dea137a33d2d59d222168bccaba22aef4d5bb022f2a33868398",
-      "bytes": 138892,
+      "file": "card-art-static/c021-n-0fcdfe1841636e311f01494b66728ae601eabe3f2def1ac9bdbce2b811ecf8b5.webp",
+      "sha256": "0fcdfe1841636e311f01494b66728ae601eabe3f2def1ac9bdbce2b811ecf8b5",
+      "bytes": 57784,
       "width": 630,
       "height": 880
     },
@@ -16,9 +16,9 @@
       "height": 880
     },
     "c021-s": {
-      "file": "card-art-static/c021-s-527d5e2b17f7980d4861e5fcbd80f7fb30f3cce6c473f3b071e272213eb6b95d.webp",
-      "sha256": "527d5e2b17f7980d4861e5fcbd80f7fb30f3cce6c473f3b071e272213eb6b95d",
-      "bytes": 200550,
+      "file": "card-art-static/c021-s-8b57f68467a51e9fac514fef3c2d7bb739dd4e454c38aeac8b1aa3b181a61dba.webp",
+      "sha256": "8b57f68467a51e9fac514fef3c2d7bb739dd4e454c38aeac8b1aa3b181a61dba",
+      "bytes": 79100,
       "width": 630,
       "height": 880
     },
@@ -51,16 +51,16 @@
       "height": 880
     },
     "c022-s": {
-      "file": "card-art-static/c022-s-61aac600ade711bf4e309e87c03fc86a0655b3e5c56a82ab01af21fb28d7fbab.webp",
-      "sha256": "61aac600ade711bf4e309e87c03fc86a0655b3e5c56a82ab01af21fb28d7fbab",
-      "bytes": 272972,
+      "file": "card-art-static/c022-s-4831c01d74ad7f246a61ba329a1607aa6a0fee6543d68436144caa18b4a55f69.webp",
+      "sha256": "4831c01d74ad7f246a61ba329a1607aa6a0fee6543d68436144caa18b4a55f69",
+      "bytes": 132220,
       "width": 630,
       "height": 880
     },
     "c022-g": {
-      "file": "card-art-static/c022-g-974b67eee1e7687b4a9afdbe58ae14182fc9fd5158c1c63409092f9178e1c283.webp",
-      "sha256": "974b67eee1e7687b4a9afdbe58ae14182fc9fd5158c1c63409092f9178e1c283",
-      "bytes": 236770,
+      "file": "card-art-static/c022-g-3a6f862f9df571b13662120053737ccc005299ba02dffa3476040bf819f50f80.webp",
+      "sha256": "3a6f862f9df571b13662120053737ccc005299ba02dffa3476040bf819f50f80",
+      "bytes": 122314,
       "width": 630,
       "height": 880
     },
@@ -93,16 +93,16 @@
       "height": 880
     },
     "c023-g": {
-      "file": "card-art-static/c023-g-aee355add2bd13f348823c45748b9ac8a4a8351fc5ab082b8c107577a0bc5fb2.webp",
-      "sha256": "aee355add2bd13f348823c45748b9ac8a4a8351fc5ab082b8c107577a0bc5fb2",
-      "bytes": 281986,
+      "file": "card-art-static/c023-g-8187ec9ffdcf3422cdf6bce45e8ea49c21692a7eaa356919c03fe6e3f0b73bc4.webp",
+      "sha256": "8187ec9ffdcf3422cdf6bce45e8ea49c21692a7eaa356919c03fe6e3f0b73bc4",
+      "bytes": 173418,
       "width": 630,
       "height": 880
     },
     "c023-u": {
-      "file": "card-art-static/c023-u-256c4b3c8169d41f222121b77e8081cef019873d65733885a6b9ed088e86b0ec.webp",
-      "sha256": "256c4b3c8169d41f222121b77e8081cef019873d65733885a6b9ed088e86b0ec",
-      "bytes": 253266,
+      "file": "card-art-static/c023-u-3c261cbc374b472362f69c2b81fcfda404927b1c330035c34a162e606b338704.webp",
+      "sha256": "3c261cbc374b472362f69c2b81fcfda404927b1c330035c34a162e606b338704",
+      "bytes": 140656,
       "width": 630,
       "height": 880
     },
@@ -114,30 +114,30 @@
       "height": 880
     },
     "c024-r": {
-      "file": "card-art-static/c024-r-be1b269df624184f33878a8bb9f13374091cf5848de56a3c09b67b60cab46fda.webp",
-      "sha256": "be1b269df624184f33878a8bb9f13374091cf5848de56a3c09b67b60cab46fda",
-      "bytes": 208816,
+      "file": "card-art-static/c024-r-5927f8589cef8770de94eeee660d2df2b0202b57f462212a270364fae4696d89.webp",
+      "sha256": "5927f8589cef8770de94eeee660d2df2b0202b57f462212a270364fae4696d89",
+      "bytes": 98904,
       "width": 630,
       "height": 880
     },
     "c024-s": {
-      "file": "card-art-static/c024-s-bf539becc000502195f831af8ac87f9116bdec983403041fec6062968246d0e6.webp",
-      "sha256": "bf539becc000502195f831af8ac87f9116bdec983403041fec6062968246d0e6",
-      "bytes": 260300,
+      "file": "card-art-static/c024-s-7c062137593a3ca5f6ba1decd9ead1efdf7357f81ab8157249ebd508a12f187e.webp",
+      "sha256": "7c062137593a3ca5f6ba1decd9ead1efdf7357f81ab8157249ebd508a12f187e",
+      "bytes": 142560,
       "width": 630,
       "height": 880
     },
     "c024-g": {
-      "file": "card-art-static/c024-g-4ec83c3e5dde0e5b4977516a63b2c88f98ea1ef2dd00f4eb55eb8d6c9189d4ae.webp",
-      "sha256": "4ec83c3e5dde0e5b4977516a63b2c88f98ea1ef2dd00f4eb55eb8d6c9189d4ae",
-      "bytes": 322778,
+      "file": "card-art-static/c024-g-d70a3e443ccb922048434e6c2225ed93af342ebeaf7bb032cc5d9671bdf85f51.webp",
+      "sha256": "d70a3e443ccb922048434e6c2225ed93af342ebeaf7bb032cc5d9671bdf85f51",
+      "bytes": 200450,
       "width": 630,
       "height": 880
     },
     "c024-u": {
-      "file": "card-art-static/c024-u-d1d5a5d8a87715ceadbbe603bab5abea35a5d4eaf83b9cb8333c98b8228873a5.webp",
-      "sha256": "d1d5a5d8a87715ceadbbe603bab5abea35a5d4eaf83b9cb8333c98b8228873a5",
-      "bytes": 319280,
+      "file": "card-art-static/c024-u-9b3ecfc2ff5dc8fe3cc7f781acb3eadc0e3fd98089227d9a31b2785b3b7e3f7f.webp",
+      "sha256": "9b3ecfc2ff5dc8fe3cc7f781acb3eadc0e3fd98089227d9a31b2785b3b7e3f7f",
+      "bytes": 194442,
       "width": 630,
       "height": 880
     },
@@ -149,9 +149,9 @@
       "height": 880
     },
     "c025-r": {
-      "file": "card-art-static/c025-r-fcdb7fa4a44422c35f2b1e63c72d7dfc77a56772e18ad13ba72bbb9c27e288b8.webp",
-      "sha256": "fcdb7fa4a44422c35f2b1e63c72d7dfc77a56772e18ad13ba72bbb9c27e288b8",
-      "bytes": 172178,
+      "file": "card-art-static/c025-r-1d5a9f9eac7ddb95516319d7f2cc170a5fc4a77f9ee4ba9ba1c844ac782dda79.webp",
+      "sha256": "1d5a9f9eac7ddb95516319d7f2cc170a5fc4a77f9ee4ba9ba1c844ac782dda79",
+      "bytes": 78766,
       "width": 630,
       "height": 880
     },
@@ -163,9 +163,9 @@
       "height": 880
     },
     "c025-g": {
-      "file": "card-art-static/c025-g-0205d3cfad4dacf7b86b03f4f538f59bd73cf06c01201d41441ee4a3378b30d7.webp",
-      "sha256": "0205d3cfad4dacf7b86b03f4f538f59bd73cf06c01201d41441ee4a3378b30d7",
-      "bytes": 282102,
+      "file": "card-art-static/c025-g-f37b0d7a15cf3f725350b4a7349e9c122c902ecd81ccc109a57c03d21d1fcf43.webp",
+      "sha256": "f37b0d7a15cf3f725350b4a7349e9c122c902ecd81ccc109a57c03d21d1fcf43",
+      "bytes": 145818,
       "width": 630,
       "height": 880
     },
@@ -184,9 +184,9 @@
       "height": 880
     },
     "c026-r": {
-      "file": "card-art-static/c026-r-4c3fc7ecf201ee21348093b1136551366aea0cc3c7eac7a8cb67084869967800.webp",
-      "sha256": "4c3fc7ecf201ee21348093b1136551366aea0cc3c7eac7a8cb67084869967800",
-      "bytes": 160906,
+      "file": "card-art-static/c026-r-596f7adf4544f3567b7e1ae52c558568a30576492e049c3603fcd2aac7d8f1c7.webp",
+      "sha256": "596f7adf4544f3567b7e1ae52c558568a30576492e049c3603fcd2aac7d8f1c7",
+      "bytes": 96964,
       "width": 630,
       "height": 880
     },
@@ -205,9 +205,9 @@
       "height": 880
     },
     "c026-u": {
-      "file": "card-art-static/c026-u-3e4f623f69f2f4a4bfc0b0ca81811177427856437a4a17ea7f3b9e15d2ba512d.webp",
-      "sha256": "3e4f623f69f2f4a4bfc0b0ca81811177427856437a4a17ea7f3b9e15d2ba512d",
-      "bytes": 287740,
+      "file": "card-art-static/c026-u-51c477e0a547c806091d25fced277fb41f1f6c9ea7a5a49c055523291ef065bc.webp",
+      "sha256": "51c477e0a547c806091d25fced277fb41f1f6c9ea7a5a49c055523291ef065bc",
+      "bytes": 183302,
       "width": 630,
       "height": 880
     },
@@ -240,9 +240,9 @@
       "height": 880
     },
     "c027-u": {
-      "file": "card-art-static/c027-u-80e71f1dbb577f5f0fcd880ac6fbc0fe2500beb0db350dc4c6ad9a4d3acf7c0d.webp",
-      "sha256": "80e71f1dbb577f5f0fcd880ac6fbc0fe2500beb0db350dc4c6ad9a4d3acf7c0d",
-      "bytes": 267060,
+      "file": "card-art-static/c027-u-ad75eefb60170074657f374c35f13c725ecd7936cf66511902b9d8abda3babdd.webp",
+      "sha256": "ad75eefb60170074657f374c35f13c725ecd7936cf66511902b9d8abda3babdd",
+      "bytes": 166758,
       "width": 630,
       "height": 880
     },
@@ -289,9 +289,9 @@
       "height": 880
     },
     "c029-r": {
-      "file": "card-art-static/c029-r-bba8b746f3bc9abfed2ebd7befd613261b295481aa9ac6e2a9b92323aeba4f83.webp",
-      "sha256": "bba8b746f3bc9abfed2ebd7befd613261b295481aa9ac6e2a9b92323aeba4f83",
-      "bytes": 160814,
+      "file": "card-art-static/c029-r-ebe7552928741feb4192db514dc7a09d093ff0394b0da61d42f2605864953ae0.webp",
+      "sha256": "ebe7552928741feb4192db514dc7a09d093ff0394b0da61d42f2605864953ae0",
+      "bytes": 79868,
       "width": 630,
       "height": 880
     },
@@ -345,9 +345,9 @@
       "height": 880
     },
     "c030-u": {
-      "file": "card-art-static/c030-u-ae3cff54a80fd82af6b74c9bc8596d55c73d53837e148874284bbdf47a6f4185.webp",
-      "sha256": "ae3cff54a80fd82af6b74c9bc8596d55c73d53837e148874284bbdf47a6f4185",
-      "bytes": 281598,
+      "file": "card-art-static/c030-u-5b8ac67925d5d2026444413c0695ff6e56c46d89e3812d141ef0ce4095d07872.webp",
+      "sha256": "5b8ac67925d5d2026444413c0695ff6e56c46d89e3812d141ef0ce4095d07872",
+      "bytes": 153550,
       "width": 630,
       "height": 880
     }
