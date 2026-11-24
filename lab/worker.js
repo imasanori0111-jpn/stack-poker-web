@@ -53,7 +53,8 @@ self.onmessage = async (ev) => {
   const q = ev.data;
   try {
     if (!wasmBytes) wasmBytes = await (await fetch("solver.wasm")).arrayBuffer();
-    const R = self.LAB_RANGES[q.range];
+    // q.ranges = {oop, ip}: 1,326 weights handed over from the library (a turn line's ranges); else a named model range
+    const R = q.ranges || self.LAB_RANGES[q.range];
     const args = ["lab", "--board", q.board, "--pot", String(q.pot), "--stack", String(q.stack),
       "--oopbets", q.oopbets, "--bets", q.ipbets, "--raises", "3", "--raise-pot", "0.5,0.75,1", "--cap", "1", "--allin", "1",
       "--oop", "w:" + R.oop.join(","), "--ip", "w:" + R.ip.join(","), "--iters", String(q.iters)];

@@ -113,12 +113,21 @@ $("rand").onclick = () => {
   for (let i = deck.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [deck[i], deck[j]] = [deck[j], deck[i]]; }
   $("board").value = deck.slice(0, 5).join("");
 };
+// Hand-off from the library page (CLAUDE-263-238): a turn line's ranges, pot and stack, and the 5-card board
+let HANDOFF = null;
+try { if (location.hash === "#from-library") HANDOFF = JSON.parse(sessionStorage.getItem("lab-river-handoff") || "null"); } catch (e) { HANDOFF = null; }
+if (HANDOFF) {
+  $("board").value = HANDOFF.board; $("board").readOnly = true; $("rand").hidden = true;
+  $("range").closest("select").hidden = true; $("depth").hidden = true;
+  document.querySelector('label[for="range"]').textContent = "レンジ: " + HANDOFF.label;
+  document.querySelector('label[for="depth"]').textContent = `ポット ${HANDOFF.pot}・残り ${HANDOFF.stack}(ターンまでの進み方から)`;
+}
 $("go").onclick = () => {
   const board = parseBoard($("board").value);
   if (!board) { $("status").innerHTML = '<span class="err">ボードは、違うカード5枚で書いてください(例: 6s2d9hKc3d)</span>'; return; }
-  const stack = Number($("depth").value), pot = 20, m = MENU[stack <= 2 * pot ? "shallow" : "deep"];
+  const stack = HANDOFF ? HANDOFF.stack : Number($("depth").value), pot = HANDOFF ? HANDOFF.pot : 20, m = MENU[stack <= 2 * pot ? "shallow" : "deep"];
   $("go").disabled = true; $("status").textContent = "解いています…(数秒〜数十秒)";
-  worker.postMessage({ board, pot, stack, range: $("range").value, oopbets: m.oop, ipbets: m.ip, iters: 200 });
+  worker.postMessage({ board, pot, stack, range: $("range").value, ranges: HANDOFF ? HANDOFF.ranges : null, oopbets: m.oop, ipbets: m.ip, iters: 200 });
 };
 worker.onmessage = (ev) => {
   $("go").disabled = false;

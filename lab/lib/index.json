@@ -1,1 +1,1 @@
-{"boards": [{"board3": "6s2d9h", "flop_cert": 2.8273, "turns": 12}, {"board3": "AsJs7h", "flop_cert": 2.0287, "turns": 12}, {"board3": "Qc5cKs", "flop_cert": 1.9056, "turns": 12}], "ranges": "C1 のモデル: BTN のオープン 対 BB のコール(1回レイズのポット)・ポット 20・残り 360"}
+{"boards": [{"board3": "6s2d9h", "flop_cert": 1.6547, "turns": 12}, {"board3": "AsJs7h", "flop_cert": 1.1743, "turns": 12}, {"board3": "Qc5cKs", "flop_cert": 1.2207, "turns": 12}], "ranges": "C1 のモデル: BTN のオープン 対 BB のコール(1回レイズのポット)・ポット 20・残り 360"}
