@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>STACK GTO ラボ(フロップ・ターン) | スタックホールデム</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; background: #0b1230; color: #e8ecf6; font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif; line-height: 1.6; }
+  main { max-width: 720px; margin: 0 auto; padding: 20px 16px 48px; }
+  h1 { font-size: 20px; color: #f2d08a; margin: 0 0 4px; }
+  h2 { font-size: 16px; color: #f2d08a; margin: 22px 0 8px; border-bottom: 1px solid rgba(224,176,74,.4); padding-bottom: 4px; }
+  p { font-size: 14px; margin: 6px 0; }
+  a { color: #f2d08a; }
+  .meta { color: #a5aec8; font-size: 12px; }
+  .note { background: rgba(255,200,80,.1); border: 1px solid rgba(255,200,80,.4); border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+  .proof { background: rgba(80,200,140,.12); border: 1px solid rgba(80,200,140,.5); border-radius: 8px; padding: 8px 12px; font-size: 14px; margin-top: 10px; }
+  label { display: block; font-size: 13px; color: #c9d1e8; margin: 10px 0 4px; }
+  select { font: inherit; font-size: 15px; width: 100%; border-radius: 8px; border: 1px solid rgba(224,176,74,.5); background: #141d45; color: #e8ecf6; padding: 8px 10px; box-sizing: border-box; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tabs button { font: inherit; font-size: 14px; border-radius: 8px; background: #141d45; color: #f2d08a; border: 1px solid rgba(224,176,74,.5); padding: 6px 10px; }
+  .tabs button.on { background: #f2d08a; color: #20160a; }
+  .bar { display: flex; height: 22px; border-radius: 6px; overflow: hidden; margin: 8px 0 4px; }
+  .bar span { display: block; height: 100%; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+  .grid { display: grid; grid-template-columns: repeat(13, 1fr); gap: 1px; margin-top: 10px; }
+  .cell { position: relative; aspect-ratio: 1; background: #1a2350; font-size: 9px; overflow: hidden; border-radius: 2px; cursor: pointer; }
+  .cell .fill { position: absolute; inset: 0; display: flex; flex-direction: column-reverse; }
+  .cell .fill span { display: block; width: 100%; }
+  .cell b { position: absolute; left: 1px; top: 0; font-weight: 600; color: #fff; text-shadow: 0 0 2px #000, 0 0 2px #000; }
+  .cell.empty { opacity: .25; cursor: default; }
+  .combos { font-size: 13px; margin-top: 8px; }
+  .combos table { width: 100%; border-collapse: collapse; }
+  .combos td { border-bottom: 1px solid rgba(255,255,255,.08); padding: 3px 4px; }
+  .err { color: #ff9b9b; }
+</style>
+</head>
+<body>
+<main>
+<h1>STACK GTO ラボ(フロップ・ターン)</h1>
+<p class="meta">前もって解いた局面を見るページです(研究用の試作)。リバーをその場で解くページは <a href="river.html">こちら</a>。</p>
+<p class="meta" id="rangesNote"></p>
+
+<label for="board">フロップ</label>
+<select id="board"></select>
+<div class="tabs" id="streets"></div>
+<div id="turnPick" hidden>
+  <label for="line">フロップの進み方</label>
+  <select id="line"></select>
+  <label for="turn">ターンのカード</label>
+  <select id="turn"></select>
+</div>
+<p id="status" class="meta">読み込んでいます…</p>
+<div id="result" hidden>
+  <div class="proof" id="proof"></div>
+  <h2>打ち方</h2>
+  <label for="node">判断の場所</label>
+  <select id="node"></select>
+  <p id="nodeinfo" class="meta"></p>
+  <div class="bar" id="bar"></div>
+  <div class="legend" id="legend"></div>
+  <div class="grid" id="grid"></div>
+  <div class="combos" id="combos"></div>
+  <h2>この数字の意味</h2>
+  <p class="note" id="meaning"></p>
+</div>
+</main>
+<script>
+const RANKS = "23456789TJQKA", SUITS = "cdhs", SUIT_JP = { s: "♠", h: "♥", d: "♦", c: "♣" };
+const COMBOS = []; for (let a = 0; a < 52; a++) for (let b = a + 1; b < 52; b++) COMBOS.push([a, b]);
+const cname = (c) => RANKS[c >> 2] + SUITS[c & 3];
+const comboName = ([a, b]) => cname(b) + cname(a); // higher card first
+const dec = (s) => { const v = new Array(s.length); for (let i = 0; i < s.length; i++) v[i] = s[i] === "~" ? -1 : s.charCodeAt(i) - 48; return v; };
+const COLORS = { check: "#5f8fd8", call: "#46a86b", fold: "#6b7390", allin: "#c9302c" };
+const betColor = (i) => ["#f2c15a", "#e99a3c", "#d9692f", "#b8422b"][Math.min(3, i)];
+const raiseColor = (i) => ["#c77dd6", "#a65fc4", "#8547ad", "#642f8f"][Math.min(3, i)];
+const $ = (id) => document.getElementById(id);
+const SEAT = ["OOP(BB)", "IP(BTN)"];
+let IDX = null, DOC = null, STREET = "flop", CACHE = {};
+
+function actName(l) {
+  if (l === "check") return "チェック"; if (l === "call") return "コール"; if (l === "fold") return "フォールド"; if (l === "allin") return "ALL IN";
+  if (/^b\d+$/.test(l)) return "ベット " + l.slice(1) + "%";
+  if (/^r[\d.]+x$/.test(l)) return "レイズ " + l.slice(1, -1) + "倍";
+  if (/^p\d+$/.test(l)) return "レイズ " + ({ 50: "1/2", 75: "3/4", 100: "1" }[l.slice(1)] || l.slice(1) + "%") + "(コール後のポット)";
+  return l;
+}
+function actColors(labels) { let b = 0, r = 0; return labels.map((l) => COLORS[l] || (/^b/.test(l) ? betColor(b++) : raiseColor(r++))); }
+function lineText(line) { // flop line: actors alternate from OOP
+  if (!line) return "フロップの最初";
+  let p = 0; return line.split(",").map((a) => { const t = (p === 0 ? "OOP " : "IP ") + actName(a); p = 1 - p; return t; }).join(" → ");
+}
+function classOf(name) {
+  const r1 = RANKS.indexOf(name[0]), r2 = RANKS.indexOf(name[2]), hi = Math.max(r1, r2), lo = Math.min(r1, r2), suited = name[1] === name[3];
+  return [12 - (suited || hi === lo ? hi : lo), 12 - (suited || hi === lo ? lo : hi), RANKS[hi] + RANKS[lo] + (hi === lo ? "" : suited ? "s" : "o")];
+}
+async function load(b) { if (!CACHE[b]) CACHE[b] = await (await fetch("lib/" + b + ".json")).json(); return CACHE[b]; }
+fetch("lib/index.json").then((r) => r.json()).then((idx) => {
+  IDX = idx; $("rangesNote").textContent = "レンジ: " + idx.ranges;
+  $("board").innerHTML = idx.boards.map((b) => `<option value="${b.board3}">${b.board3.match(/../g).map((c) => c[0] + SUIT_JP[c[1]]).join(" ")}</option>`).join("");
+  $("board").onchange = () => openBoard(); openBoard();
+}).catch((e) => { $("status").innerHTML = '<span class="err">読み込めませんでした: ' + e + "</span>"; });
+async function openBoard() {
+  $("status").textContent = "読み込んでいます…"; $("result").hidden = true;
+  DOC = await load($("board").value);
+  $("status").textContent = "";
+  const lines = [...new Set(DOC.turns.map((t) => t.line))];
+  $("line").innerHTML = lines.map((l) => { const p = (DOC.flop.lines.find((x) => x.line === l) || {}).prob; return `<option value="${l}">${lineText(l)}${p ? `(${(p * 100).toFixed(0)}%)` : ""}</option>`; }).join("");
+  $("line").onchange = () => { fillTurns(); show(); }; $("turn").onchange = show;
+  fillTurns(); renderStreets(); show();
+}
+function fillTurns() {
+  const ts = DOC.turns.filter((t) => t.line === $("line").value);
+  $("turn").innerHTML = ts.map((t, i) => `<option value="${t.turn}">${t.turn[0]}${SUIT_JP[t.turn[1]]}</option>`).join("");
+}
+function renderStreets() {
+  const s = $("streets"); s.innerHTML = "";
+  [["flop", "フロップ"], ["turn", "ターン"]].forEach(([k, name]) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = name; b.className = STREET === k ? "on" : "";
+    b.onclick = () => { STREET = k; renderStreets(); show(); }; s.appendChild(b);
+  });
+  $("turnPick").hidden = STREET !== "turn";
+}
+let NODES = [];
+function show() {
+  $("result").hidden = false; $("combos").innerHTML = "";
+  if (STREET === "flop") {
+    const f = DOC.flop;
+    $("proof").innerHTML = `<b>証明(縮めた木)</b>: この木の中では、本当の手札を使う最善の相手でも、この打ち方から余分に取れるのは <b>ポットの ${f.cert.toFixed(2)}%</b> 以下です(${f.iters} 回)。`;
+    $("meaning").textContent = `木: ${f.tree}。ポット ${f.pot}・残り ${f.stack}。ターン・リバーを似た手でまとめたぶん、リバーやターンのページより数字が大きくなります。レンジは C1 のモデルで、相手が本当にこのレンジで来るとは限りません。`;
+    NODES = f.nodes.filter((n) => reachOf(n).some((x) => x > 0)).sort((a, b) => a.line.split(",").length - b.line.split(",").length || a.line.localeCompare(b.line));
+    $("node").innerHTML = NODES.map((n, i) => `<option value="${i}">${lineText(n.line)} → ${SEAT[n.player]}</option>`).join("");
+  } else {
+    const t = DOC.turns.find((x) => x.line === $("line").value && x.turn === $("turn").value);
+    if (!t) { $("result").hidden = true; return; }
+    $("proof").innerHTML = `<b>証明</b>: このターン(このレンジ・ゲームの4択とレイズ)の中では、最善の相手でも、この打ち方から余分に取れるのは <b>ポットの ${t.cert.toFixed(2)}%</b> 以下です(${t.iters} 回)。`;
+    $("meaning").textContent = `ポット ${t.pot}・残り ${t.stack}。ベットは画面の4択(OOP 10/33/100/200%・IP 10/50/100/200%)、レイズは 3倍・コール後のポットの 1/2・3/4・1 と ALL IN、リバーは画面の表。両者のレンジは、上のフロップの解でこの進み方をしたときのものです。`;
+    NODES = t.nodes.map((n) => ({ ...n, _turn: t }));
+    $("node").innerHTML = NODES.map((n, i) => `<option value="${i}">${n.after === "root" ? "OOP(BB)の最初" : n.after === "check" ? "OOP がチェック → IP(BTN)" : "OOP が " + actName(n.after) + " → IP(BTN)"}</option>`).join("");
+  }
+  $("node").onchange = render; render();
+}
+// the acting player's weight per combo at a flop node: the prior x the player's own actions earlier on the line
+function reachOf(n) {
+  const p = n.player, w = dec(DOC.flop.prior[p === 0 ? "oop" : "ip"]).map((x) => Math.max(0, x));
+  const acts = n.line ? n.line.split(",") : [];
+  for (let k = 0; k < acts.length; k++) {
+    const pre = acts.slice(0, k).join(","), node = DOC.flop.nodes.find((x) => x.line === pre);
+    if (!node || node.player !== p) continue;
+    const pct = dec(node.hand_pct[node.labels.indexOf(acts[k])]);
+    for (let i = 0; i < 1326; i++) w[i] = pct[i] < 0 ? 0 : w[i] * pct[i] / 100;
+  }
+  return w;
+}
+function render() {
+  const n = NODES[Number($("node").value) || 0], cols = actColors(n.labels);
+  const board = STREET === "flop" ? DOC.board3 : DOC.board3 + n._turn.turn;
+  const dead = new Set(board.match(/../g));
+  const w = STREET === "flop" ? reachOf(n) : dec(n._turn.ranges[n.player === 0 ? "oop" : "ip"]).map((x) => Math.max(0, x));
+  const pct = n.hand_pct.map(dec);
+  let freqs = n.freqs;
+  if (!freqs) { const tot = w.reduce((s, x) => s + x, 0); freqs = n.labels.map((_, a) => tot > 0 ? pct[a].reduce((s, v, i) => s + (v > 0 ? v * w[i] : 0), 0) / 100 / tot : 0); }
+  $("nodeinfo").textContent = `${SEAT[n.player]}の番` + (STREET === "flop" ? "(割合はこの人の手札の重みで平均)" : "");
+  $("bar").innerHTML = freqs.map((f, a) => `<span style="width:${(f * 100).toFixed(2)}%;background:${cols[a]}"></span>`).join("");
+  $("legend").innerHTML = n.labels.map((l, a) => `<span><i style="background:${cols[a]}"></i>${actName(l)} ${(freqs[a] * 100).toFixed(1)}%</span>`).join("");
+  const agg = Array.from({ length: 169 }, () => ({ w: 0, f: n.labels.map(() => 0), combos: [] }));
+  COMBOS.forEach((c, i) => {
+    if (!(w[i] > 0) || pct[0][i] < 0) return;
+    const name = comboName(c); if (dead.has(name.slice(0, 2)) || dead.has(name.slice(2))) return;
+    const [r, col] = classOf(name), g = agg[r * 13 + col]; g.w += w[i];
+    pct.forEach((arr, a) => { g.f[a] += w[i] * arr[i]; });
+    g.combos.push({ h: name, pct: pct.map((arr) => arr[i]) });
+  });
+  const grid = $("grid"); grid.innerHTML = "";
+  for (let r = 0; r < 13; r++) for (let c = 0; c < 13; c++) {
+    const g = agg[r * 13 + c], hi = 12 - Math.min(r, c), lo = 12 - Math.max(r, c);
+    const name = RANKS[hi] + RANKS[lo] + (r === c ? "" : r < c ? "s" : "o");
+    const d = document.createElement("div"); d.className = "cell" + (g.w > 0 ? "" : " empty");
+    d.innerHTML = (g.w > 0 ? `<div class="fill">${g.f.map((x, a) => `<span style="height:${(x / g.w).toFixed(1)}%;background:${cols[a]}"></span>`).join("")}</div>` : "") + `<b>${name}</b>`;
+    if (g.w > 0) d.onclick = () => showCombos(name, g, n, cols);
+    grid.appendChild(d);
+  }
+  $("combos").innerHTML = "";
+}
+function showCombos(name, g, n, cols) {
+  const pretty = (h) => h[0] + SUIT_JP[h[1]] + h[2] + SUIT_JP[h[3]];
+  $("combos").innerHTML = `<p><b>${name}</b>(手札ごと・%)</p><table>` + g.combos.map((c) =>
+    `<tr><td>${pretty(c.h)}</td>${c.pct.map((x, a) => x > 0 ? `<td style="color:${cols[a]}">${actName(n.labels[a])} ${x}</td>` : "").join("")}</tr>`).join("") + "</table>";
+}
+</script>
+</body>
+</html>
