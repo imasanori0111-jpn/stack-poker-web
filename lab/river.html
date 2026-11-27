@@ -117,15 +117,28 @@ $("rand").onclick = () => {
 let HANDOFF = null;
 try { if (location.hash === "#from-library") HANDOFF = JSON.parse(sessionStorage.getItem("lab-river-handoff") || "null"); } catch (e) { HANDOFF = null; }
 if (HANDOFF) {
-  $("board").value = HANDOFF.board; $("board").readOnly = true; $("rand").hidden = true;
+  $("board").value = HANDOFF.board; $("board").readOnly = true; $("rand").style.display = "none";
   $("range").closest("select").hidden = true; $("depth").hidden = true;
   document.querySelector('label[for="range"]').textContent = "レンジ: " + HANDOFF.label;
   document.querySelector('label[for="depth"]').textContent = `ポット ${HANDOFF.pot}・残り ${HANDOFF.stack}(ターンまでの進み方から)`;
 }
+// From the app's hand history (段階4・CLAUDE-263-241): #hand=<board>,<stack for pot 20>,<range>,<hero 2 cards>,<oop|ip>
+let HERO = null;
+{
+  const m = /^#hand=([2-9TJQKA][shdc]{1}(?:[2-9TJQKA][shdc]){4}),([\d.]+),(c1-srp|c1-3bp),((?:[2-9TJQKA][shdc]){2}),(oop|ip)$/.exec(location.hash);
+  if (m && !HANDOFF) {
+    $("board").value = m[1]; $("board").readOnly = true; $("rand").style.display = "none";
+    $("range").value = m[3]; $("range").disabled = true; $("depth").hidden = true;
+    HERO = { stack: Math.max(0.5, Math.min(2000, Number(m[2]))), hand: m[4], seat: m[5] };
+    document.querySelector('label[for="depth"]').textContent = `あなたのハンドから: ポット 20 にそろえて、残り ${HERO.stack}(${HERO.seat === "oop" ? "あなたが先に打つ側" : "あなたが後に打つ側"})`;
+  }
+}
+if (HERO) setTimeout(() => $("go").click(), 0);
+const sameHand = (a, b) => a && b && (a === b || a.slice(2) + a.slice(0, 2) === b);
 $("go").onclick = () => {
   const board = parseBoard($("board").value);
   if (!board) { $("status").innerHTML = '<span class="err">ボードは、違うカード5枚で書いてください(例: 6s2d9hKc3d)</span>'; return; }
-  const stack = HANDOFF ? HANDOFF.stack : Number($("depth").value), pot = HANDOFF ? HANDOFF.pot : 20, m = MENU[stack <= 2 * pot ? "shallow" : "deep"];
+  const stack = HANDOFF ? HANDOFF.stack : HERO ? HERO.stack : Number($("depth").value), pot = HANDOFF ? HANDOFF.pot : 20, m = MENU[stack <= 2 * pot ? "shallow" : "deep"];
   $("go").disabled = true; $("status").textContent = "解いています…(数秒〜数十秒)";
   worker.postMessage({ board, pot, stack, range: $("range").value, ranges: HANDOFF ? HANDOFF.ranges : null, oopbets: m.oop, ipbets: m.ip, iters: 200 });
 };
@@ -149,6 +162,12 @@ function renderTabs() {
 function render() {
   const n = DATA.nodes[CUR], p = n.player === "OOP" ? 0 : 1, cols = actColors(n.labels);
   $("nodeinfo").textContent = `${n.player === "OOP" ? "OOP(BB)" : "IP(BTN)"}の番・この線に来る割合 ${(n.line * 100).toFixed(1)}%`;
+  if (HERO && (n.player === "OOP") === (HERO.seat === "oop")) {
+    const k = DATA.hands.findIndex((h) => sameHand(h, HERO.hand)), pretty = HERO.hand[0] + SUIT_JP[HERO.hand[1]] + HERO.hand[2] + SUIT_JP[HERO.hand[3]];
+    $("nodeinfo").innerHTML += k >= 0 && DATA.weights[p][k] > 0
+      ? `<br><b>あなたの手 ${pretty}</b>: ` + n.labels.map((l, a) => `${actName(l)} ${n.hand_pct[a][k]}%`).join("・")
+      : `<br>あなたの手 ${pretty} は、この見本のレンジに入っていません`;
+  }
   $("bar").innerHTML = n.freqs.map((f, a) => `<span style="width:${(f * 100).toFixed(2)}%;background:${cols[a]}"></span>`).join("");
   $("legend").innerHTML = n.labels.map((l, a) => `<span><i style="background:${cols[a]}"></i>${actName(l)} ${(n.freqs[a] * 100).toFixed(1)}%</span>`).join("");
   // 13×13: 手の種類ごとに、レンジの重みで平均した打ち方
