@@ -6,3 +6,4 @@
 - `worker.js`: 必要な WASI の関数だけの小さな実装(ファイル・通信は使わない)と、ソルバーの呼び出し
 - `ranges.js`: C1 のモデルのレンジ(`tools/gto/ranges/c1-*.json`)
 - 設計: `tools/gto/DESIGN_PRESOLVED_LIBRARY_20261123.md`(研究ブランチ)
+- `library.html`・`lib/`: 前もって解いたフロップとターン(研究ブランチの `tools/gto/uimenu/make_lab_library.py` で作る)。`lib/` は1回レイズのポット(9盤面・ターンは各盤面の多い3〜4線 × 6枚)、`lib/3bp/` は3ベットのポット(`--pot 3bp`。9盤面・まとめなし・ターンは多い2線 × 6枚)。ページの「ポットの形」で選ぶ

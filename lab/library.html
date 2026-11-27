@@ -43,6 +43,8 @@
 <p class="meta">前もって解いた局面を見るページです(研究用の試作)。リバーをその場で解くページは <a href="river.html">こちら</a>。</p>
 <p class="meta" id="rangesNote"></p>
 
+<label for="pot">ポットの形</label>
+<select id="pot"><option value="">1回レイズのポット</option><option value="3bp/">3ベットのポット</option></select>
 <label for="board">フロップ</label>
 <select id="board"></select>
 <div class="tabs" id="streets"></div>
@@ -87,7 +89,7 @@ const betColor = (i) => ["#f2c15a", "#e99a3c", "#d9692f", "#b8422b"][Math.min(3,
 const raiseColor = (i) => ["#c77dd6", "#a65fc4", "#8547ad", "#642f8f"][Math.min(3, i)];
 const $ = (id) => document.getElementById(id);
 const SEAT = ["OOP(BB)", "IP(BTN)"];
-let IDX = null, DOC = null, STREET = "flop", CACHE = {};
+let IDX = null, DOC = null, STREET = "flop", CACHE = {}, BASE = "";
 
 function actName(l) {
   if (l === "check") return "チェック"; if (l === "call") return "コール"; if (l === "fold") return "フォールド"; if (l === "allin") return "ALL IN";
@@ -105,12 +107,19 @@ function classOf(name) {
   const r1 = RANKS.indexOf(name[0]), r2 = RANKS.indexOf(name[2]), hi = Math.max(r1, r2), lo = Math.min(r1, r2), suited = name[1] === name[3];
   return [12 - (suited || hi === lo ? hi : lo), 12 - (suited || hi === lo ? lo : hi), RANKS[hi] + RANKS[lo] + (hi === lo ? "" : suited ? "s" : "o")];
 }
-async function load(b) { if (!CACHE[b]) CACHE[b] = await (await fetch("lib/" + b + ".json")).json(); return CACHE[b]; }
-fetch("lib/index.json").then((r) => r.json()).then((idx) => {
-  IDX = idx; $("rangesNote").textContent = "レンジ: " + idx.ranges;
-  $("board").innerHTML = idx.boards.map((b) => `<option value="${b.board3}">${b.board3.match(/../g).map((c) => c[0] + SUIT_JP[c[1]]).join(" ")}</option>`).join("");
-  $("board").onchange = () => openBoard(); openBoard();
-}).catch((e) => { $("status").innerHTML = '<span class="err">読み込めませんでした: ' + e + "</span>"; });
+async function load(b) { const k = BASE + b; if (!CACHE[k]) CACHE[k] = await (await fetch("lib/" + k + ".json")).json(); return CACHE[k]; }
+// the pot kind (CLAUDE-263-248): "" = the single-raised pot (lib/), "3bp/" = the 3-bet pot (lib/3bp/)
+function openPot() {
+  BASE = $("pot").value; $("status").textContent = "読み込んでいます…"; $("result").hidden = true;
+  const keep = $("board").value;
+  fetch("lib/" + BASE + "index.json").then((r) => r.json()).then((idx) => {
+    IDX = idx; $("rangesNote").textContent = "レンジ: " + idx.ranges;
+    $("board").innerHTML = idx.boards.map((b) => `<option value="${b.board3}">${b.board3.match(/../g).map((c) => c[0] + SUIT_JP[c[1]]).join(" ")}</option>`).join("");
+    if (idx.boards.some((b) => b.board3 === keep)) $("board").value = keep;
+    openBoard();
+  }).catch((e) => { $("status").innerHTML = '<span class="err">読み込めませんでした: ' + e + "</span>"; });
+}
+$("board").onchange = () => openBoard(); $("pot").onchange = openPot; openPot();
 async function openBoard() {
   $("status").textContent = "読み込んでいます…"; $("result").hidden = true;
   DOC = await load($("board").value);
@@ -137,14 +146,14 @@ async function show() {
   $("result").hidden = false; $("combos").innerHTML = "";
   if (STREET === "flop") {
     const f = DOC.flop;
-    $("proof").innerHTML = `<b>証明(縮めた木)</b>: この木の中では、本当の手札を使う最善の相手でも、この打ち方から余分に取れるのは <b>ポットの ${f.cert.toFixed(2)}%</b> 以下です(${f.iters} 回)。`;
-    $("meaning").textContent = `木: ${f.tree}。ポット ${f.pot}・残り ${f.stack}。ターン・リバーを似た手でまとめたぶん、リバーやターンのページより数字が大きくなります。レンジは C1 のモデルで、相手が本当にこのレンジで来るとは限りません。`;
+    $("proof").innerHTML = `<b>証明(${f.tied === false ? "まとめなしの木" : "縮めた木"})</b>: この木の中では、本当の手札を使う最善の相手でも、この打ち方から余分に取れるのは <b>ポットの ${f.cert.toFixed(2)}%</b> 以下です(${f.iters} 回)。`;
+    $("meaning").textContent = `木: ${f.tree}。ポット ${f.pot}・残り ${f.stack}。${f.tied === false ? "" : "ターン・リバーを似た手でまとめたぶん、リバーやターンのページより数字が大きくなります。"}レンジは C1 のモデルで、相手が本当にこのレンジで来るとは限りません。`;
     NODES = f.nodes.filter((n) => reachOf(n).some((x) => x > 0)).sort((a, b) => a.line.split(",").length - b.line.split(",").length || a.line.localeCompare(b.line));
     $("node").innerHTML = NODES.map((n, i) => `<option value="${i}">${lineText(n.line)} → ${SEAT[n.player]}</option>`).join("");
   } else {
     const t = DOC.turns.find((x) => x.line === $("line").value && x.turn === $("turn").value);
     if (!t) { $("result").hidden = true; return; }
-    if (!t.doc) { $("status").textContent = "読み込んでいます…"; t.doc = await (await fetch("lib/" + t.file)).json(); $("status").textContent = ""; }
+    if (!t.doc) { $("status").textContent = "読み込んでいます…"; t.doc = await (await fetch("lib/" + BASE + t.file)).json(); $("status").textContent = ""; }
     $("proof").innerHTML = `<b>証明</b>: このターン(このレンジ・ゲームの4択とレイズ)の中では、最善の相手でも、この打ち方から余分に取れるのは <b>ポットの ${t.cert.toFixed(2)}%</b> 以下です(${t.iters} 回)。`;
     $("meaning").textContent = `ポット ${t.pot}・残り ${t.stack}。ベットは画面の4択(OOP 10/33/100/200%・IP 10/50/100/200%)、レイズは 3倍・コール後のポットの 1/2・3/4・1 と ALL IN、リバーは画面の表。両者のレンジは、上のフロップの解でこの進み方をしたときのものです。`;
     NODES = t.doc.nodes.map((n) => ({ ...n, _turn: t })).sort((a, b) => (a.line ? a.line.split(",").length : 0) - (b.line ? b.line.split(",").length : 0) || b.reach - a.reach);
